@@ -3,7 +3,7 @@ import random
 
 #this function takes players option and checks if it's correct and one of rock, paper or scissors
 def is_valid_play(option):
-    if option.lower() == "rock" or a.lower() == "paper" or a.lower() == "scissors":
+    if option.lower() in ["rock", "paper", "scissors"]:
         return True
 
 #this function is print in the end of game when player doesn't want to play anymore
@@ -12,16 +12,22 @@ def endgame():
 
 #this function compares player's and computer's option and returns the result of the comparsion
 def evaluate(player, computer):
+    win_list = [
+        ("rock", "scissors"),
+        ("scissors", "paper"),
+        ("paper", "rock")
+    ]
+    
     #player wins
-    if player == "rock" and computer == "scissors" or player == "scissors" and computer == "paper" or player == "paper" and computer == "rock":
+    if (player, computer) in win_list:
         return "win"
 
     #its a tie
-    elif player == "rock" and computer == "rock" or player == "scissors" and computer == "scissors" or player == "paper" and computer == "paper":
+    elif paper == computer:
         return "tie"
 
     #computer wins
-    elif player == "scissors" and computer == "rock" or player == "paper" and computer == "scissors" or  player == "rock" and computer == "paper":
+    elif (computer, player):
         return "loss"
 
     #just for checking programming errors
