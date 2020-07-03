@@ -149,18 +149,23 @@ class Game():
     #this function takes a player's and computer's choice and based of evaluate adds score to player, computer or nobody
     def evaluate(self, player, computer):
         #global player_score_screen, pc_score_screen, round_no, round_screen, score, its_a_tie
+        win_list = [
+          (image_player_rock, image_pc_scissors),
+          (image_player_scissors, image_pc_paper),
+          (image_player_paper, image_pc_rock)
+        ]
             #player wins
-        if player == image_player_rock and computer == image_pc_scissors or player == image_player_scissors and computer == image_pc_paper or player == image_player_paper and computer == image_pc_rock:
+        if (player, computer) in win_list:
             self.score[1] = self.score[1] + 1 #adds score number
             its_a_tie = 0
             self.round_no = self.round_no + 1 #adds round number
             #computer wins
-        elif player == image_player_scissors and computer == image_pc_rock or player == image_player_paper and computer == image_pc_scissors or player == image_player_rock and computer == image_pc_paper:
+        elif (computer, player) in win_list:
             self.score[0] = self.score[0] + 1
             its_a_tie = 0
             self.round_no = self.round_no + 1
             #its a tie
-        elif player == image_player_rock and computer == image_pc_rock or player == image_player_scissors and computer == image_pc_scissors or player == image_player_paper and computer == image_pc_paper:
+        elif player == computer:
             its_a_tie = 1
 
 game = Game()
