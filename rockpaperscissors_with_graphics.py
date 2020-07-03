@@ -26,6 +26,31 @@ its_a_tie = 0 # if the game is evaluated as "its a tie", the value turns 1
 play_image_size = (265, 215)
 choice_image_size = (94, 76)
 
+#players options
+options_all = graphics.Batch()
+image_dir = Path(__file__).parent / "images"
+image_option_player_rock = image.load(image_dir / "small_choice_player-01.png")
+image_option_player_paper = image.load(image_dir / "small_choice_player-02.png")
+image_option_player_scissors = image.load(image_dir / "small_choice_player-03.png")
+option_player_rock = sprite.Sprite(image_option_player_rock, o_rock_pos[0], o_rock_pos[1], batch = options_all)
+option_player_paper = sprite.Sprite(image_option_player_paper, o_paper_pos[0], o_paper_pos[1], batch = options_all)
+option_player_scissors = sprite.Sprite(image_option_player_scissors, o_scissors_pos[0], o_scissors_pos[1], batch = options_all)
+
+# player choice
+image_player_rock = image.load(image_dir / "choice_player-01.png")
+image_player_paper = image.load(image_dir / "choice_player-02.png")
+image_player_scissors = image.load(image_dir / "choice_player-03.png")
+chosen_image = image_player_rock
+player_start = sprite.Sprite(chosen_image, players_choice_pos[0], players_choice_pos[1], batch = options_all)
+
+image_pc_rock = image.load(image_dir / "choice_pc-01.png")
+image_pc_paper = image.load(image_dir / "choice_pc-02.png")
+image_pc_scissors = image.load(image_dir / "choice_pc-03.png")
+image_questionmark = image.load(image_dir / "questionmark.png")
+pc_start = sprite.Sprite(image_pc_rock, comps_choice_pos[0], comps_choice_pos[1])
+questionmark = sprite.Sprite(image_questionmark, questionmark_pos[0], questionmark_pos[1], batch = options_all)
+pc_options = [image_pc_rock, image_pc_paper, image_pc_scissors]
+
 #global labels
 gameover_screen = text.Label("x win!", font_size = 24)
 tie_label = text.Label(f"It's a tie!", font_size = 20, x = 550, y = 250, anchor_x="center")
@@ -34,12 +59,13 @@ chose_one = text.Label(f"click \non one:", font_size = 20, x = 1050, y = 470, wi
 
 @window.event
 def on_draw():
-    global its_a_tie
+    global its_a_tie, options_all
     window.clear()
+    options_all.draw()
     game.draw()
     game.restart()
-    player.player()
-    pc.pc()
+    player_start.draw()
+    pc_start.draw()
     chose_one.draw()
     if its_a_tie == 1:
          tie_label.draw()
@@ -47,9 +73,25 @@ def on_draw():
 
 @window.event
 def on_mouse_press(x, y, b, mod):
-    global chosen_image, score
+    global chosen_image, score, player_start
     game.click_record[0] = x
     game.click_record[1] = y
+    #options change
+    if game.round_no < 4:
+        if bounding_box(x, y, o_rock_pos, choice_image_size):
+            chosen_image = image_player_rock
+            player_start = sprite.Sprite(chosen_image, x = 650, y = 200)
+            game.evaluate(image_player_rock, computer_chose())
+        elif bounding_box(x, y, o_paper_pos, choice_image_size):
+            chosen_image = image_player_paper
+            player_start = sprite.Sprite(chosen_image, x = 650, y = 200)
+            game.evaluate(image_player_paper, computer_chose())
+        elif bounding_box(x, y, o_scissors_pos, choice_image_size):
+            chosen_image = image_player_scissors
+            player_start = sprite.Sprite(chosen_image, x = 650, y = 200)
+            game.evaluate(image_player_scissors, computer_chose())
+        else:
+            pass # nothing changes if clicked outside the bounding boxes
 
 
 
@@ -72,8 +114,8 @@ def bounding_box(v1, v2, v_pos, v_size):
 # computer chose randomly from rock/paper/scissors
 def computer_chose():
     global pc_choice, pc_start
-    pc_option = random.choice(pc.pc_options)
-    pc.pc_start = sprite.Sprite(pc_option, x = 150, y = 200)
+    pc_option = random.choice(pc_options)
+    pc_start = sprite.Sprite(pc_option, x = 150, y = 200)
     return pc_option
 
 class Game():
@@ -121,57 +163,5 @@ class Game():
         elif player == image_player_rock and computer == image_pc_rock or player == image_player_scissors and computer == image_pc_scissors or player == image_player_paper and computer == image_pc_paper:
             its_a_tie = 1
 
-class Options():
-    def __init__(self, x, y, b, mod):
-    #options change
-        if game.round_no < 4:
-            if bounding_box(x, y, o_rock_pos, choice_image_size):
-                player.chosen_image = player.image_player_rock
-                player.player_start = sprite.Sprite(player.chosen_image, x = 650, y = 200)
-                game.evaluate(player.image_player_rock, computer_chose())
-            elif bounding_box(x, y, o_paper_pos, choice_image_size):
-                player.chosen_image = player.image_player_paper
-                player.player_start = sprite.Sprite(player.chosen_image, x = 650, y = 200)
-                game.evaluate(player.image_player_paper, computer_chose())
-            elif bounding_box(x, y, o_scissors_pos, choice_image_size):
-                player.chosen_image = player.image_player_scissors
-                player.player_start = sprite.Sprite(player.chosen_image, x = 650, y = 200)
-                player.game.evaluate(player.image_player_scissors, computer_chose())
-            else:
-                pass # nothing changes if clicked outside the bounding boxes
-
-    def player(self):
-        #players options
-        self.options_all = graphics.Batch()
-        self.image_dir = Path(__file__).parent / "images"
-        self.image_option_player_rock = image.load(self.image_dir / "small_choice_player-01.png")
-        self.option_player_rock = sprite.Sprite(self.image_option_player_rock, o_rock_pos[0], o_rock_pos[1], batch = self.options_all)
-        self.image_option_player_paper = image.load(self.image_dir / "small_choice_player-02.png")
-        self.option_player_paper = sprite.Sprite(self.image_option_player_paper, o_paper_pos[0], o_paper_pos[1], batch = self.options_all)
-        self.image_option_player_scissors = image.load(self.image_dir / "small_choice_player-03.png")
-        self.option_player_scissors = sprite.Sprite(self.image_option_player_scissors, o_scissors_pos[0], o_scissors_pos[1], batch = self.options_all)
-
-        # player choice
-        self.image_player_rock = image.load(self.image_dir / "choice_player-01.png")
-        self.image_player_paper = image.load(self.image_dir / "choice_player-02.png")
-        self.image_player_scissors = image.load(self.image_dir / "choice_player-03.png")
-        self.chosen_image = self.image_player_rock
-        self.player_start = sprite.Sprite(self.chosen_image, players_choice_pos[0], players_choice_pos[1], batch = self.options_all)
-
-    def pc(self):
-        #pc's choice
-        self.options_all = graphics.Batch()
-        self.image_dir = Path(__file__).parent / "images"
-        self.image_pc_rock = image.load(self.image_dir / "choice_pc-01.png")
-        self.image_pc_paper = image.load(self.image_dir / "choice_pc-02.png")
-        self.image_pc_scissors = image.load(self.image_dir / "choice_pc-03.png")
-        self.image_questionmark = image.load(self.image_dir / "questionmark.png")
-        self.pc_start = sprite.Sprite(self.image_pc_rock, comps_choice_pos[0], comps_choice_pos[1])
-        self.pc_start.draw()
-        questionmark = sprite.Sprite(self.image_questionmark, questionmark_pos[0], questionmark_pos[1], batch = self.options_all)
-        self.pc_options = [self.image_pc_rock, self.image_pc_paper, self.image_pc_scissors]
-
 game = Game()
-player = Options()
-pc = Options()
 app.run()
