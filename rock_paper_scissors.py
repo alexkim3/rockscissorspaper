@@ -27,7 +27,7 @@ def evaluate(player, computer):
         return "tie"
 
     #computer wins
-    elif (computer, player):
+    elif (computer, player) in win_list:
         return "loss"
 
     #just for checking programming errors
